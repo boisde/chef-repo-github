@@ -1,0 +1,33 @@
+webserver.rest.url=http://{_host_}:8088/REST/
+
+#change the following to match your environment settings
+central.server.host=<%= @central_server_ip %>
+central.server.port=8080
+sb.hessian.url=http://<%= @sb_hessian_ip %>:8080/api/hessian/
+reporting.hessian.url=http://<%= @reporting_hessian_ip %>:8080/vcc.reporting.service/hessian
+angel.call.host=<%= @angel_call_ip %>:8080
+holly.host=<%= @holly_ip %>
+sound.file.host=<%= @sound_file_host_ip %>/sounds
+outbound.call.log.path=/usr/local/angel/obcalllog/
+
+#in millisecond
+svm.line.chart.period=43600000
+svm.line.chart.sample.interval=1800000 
+
+allow.media.server.ids=KANI-BigAlice-Number-1__KANI-BigAlice-Category-1|KANI-BigAlice-Number-2__KANI-BigAlice-Category-1 
+
+mail.smtp.host=<%= @mail_smtp_ip %>
+mail.smtp.port=25
+
+default.hold.number=52002
+default.whisper.number=52001
+agent.hold.number=7000000003
+ring.tone.number=7000000004
+
+ha.another.cs.ip=<%= @standby_central_server_ip %>
+ha.another.cs.port=8080
+
+reporting.enabled=<%= @reporting_enabled %>
+
+load.test.mode=false
+fake.agent.qty=100

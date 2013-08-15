@@ -1,0 +1,50 @@
+{
+    "_comment" : "Must configure this, used to connected to related Central Server(Active or Standby), in the format of <proxy name>:tcp -h <server ip> -p <port number>.",
+    "cs_proxy_str": "CSimplKANIinvoke:tcp -h <%= @central_server_ip %> -p 10000",
+    "cs_proxy_standby_str": "CSimplKANIinvoke:tcp -h <%= @standby_central_server_ip %> -p 10000",
+
+    "_comment" : "Optional, used to inform Central Server of which KANI I am.",
+    "kani_identity_name_str": "KANI-BigAlice-Number-2",
+    "kani_identity_category_str": "KANI-BigAlice-Category-1",
+
+    "_comment" : "Must configure this, used this machine's ip address for this.",
+    "kani_sip_stack_ip_str": "<%= @kani_sip_stack_ip %>",
+    "_comment" : "Optional, just a listening port.",
+    "kani_sip_stack_local_port": 5060,
+
+    "_comment" : "Must configure this, use the ip address of the machine that serves as the sip gateway for this.",
+    "kani_sip_gateway_ip_str" : "<%= @kani_sip_gateway_ip %>",
+    "_comment" : "Optional, just a sip port of this sip gateway.",
+    "kani_sip_gateway_default_port": 5060,
+
+    "_comment" : "Must configure this, use the ip address of holly that serves for this KANI work.",
+    "holly_ip_str" : "<%= @kani_holly_ip %>",
+    "_comment" : "Optional, just a sip port of this holly.",
+    "holly_default_sip_port" : 5060,
+
+
+    "_comment" : "Must configure this, for recording.",
+    "recorded_raw_audio_directory": "/usr/local/angel/service/kani/data",
+    "converted_recording_audio_directory": "/usr/local/angel/service/kani/data",
+    "recording_informational_file_path" : "/usr/local/angel/service/kani/data/recording_info.txt",
+    "bash_file_path_and_args" : "/home/alice/wavwav.sh alice.raw bob.raw trudy.raw",
+
+    "_comment" : "Below is all Optional, all about our system limit and some miscellaneous.",
+    "max_call_count_on_one_ip": 1024,
+    "max_conversation_count": 256,
+    "max_call_count_in_one_conversation": 6,
+    "max_username_char_size": 32,
+
+    "rtp_read_timeout": 500000,
+    "rtp_write_timeout": 10000,
+    "rtp_reader_number": 8,
+    "rtp_writer_number": 8,
+    "send_rtp_payload": 0,
+    "default_rtp_packet_time_stamp": 160,
+    "default_rtp_packet_time_duration": 20 ,
+    "default_ping_cs_interval": 500,
+
+    "rtp_reader_trace_tag": 0,
+    "rtp_writer_trace_tag": 0,
+    "conversation_trace_tag": 0
+}

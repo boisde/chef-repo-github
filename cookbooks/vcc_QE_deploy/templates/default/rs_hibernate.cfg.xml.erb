@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<!DOCTYPE hibernate-configuration PUBLIC
+"-//Hibernate/Hibernate Configuration DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+        <session-factory>
+                <!-- Database connection settings -->
+                <property name="connection.driver_class">oracle.jdbc.driver.OracleDriver</property>
+
+                <property name="connection.url">jdbc:oracle:thin:@10.63.60.165:1521:qeoltp</property>
+
+                <property name="connection.username">qe_oltp_vcc</property>
+
+                <property name="connection.password">qe_oltp_vcc</property>
+
+                <!-- JDBC connection pool (use c3p0) -->
+                <property name="hibernate.c3p0.min_size">5</property>
+                <property name="hibernate.c3p0.max_size">20</property>
+                <property name="hibernate.c3p0.timeout">300</property>
+                <property name="hibernate.c3p0.max_statements">50</property>
+                <property name="hibernate.c3p0.idle_test_period">3000</property>
+                <property name="hibernate.c3p0.autoCommitOnClose">false</property>
+
+                <!-- SQL dialect -->
+                <property name="dialect">org.hibernate.dialect.Oracle10gDialect</property>
+
+                <!-- Enable Hibernate's automatic session context management -->
+                <property name="current_session_context_class">thread</property>
+
+                <!-- Disable the second-level cache -->
+                <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+                <!-- Echo all executed SQL to stdout -->
+                <property name="show_sql">false</property>
+
+                <!-- Disable Hibernate from trying to retrieve some meta information from the database -->
+                <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
+
+                <mapping class="com.angel.vcc.reporting.bean.CqCallerLog" />
+                <mapping class="com.angel.vcc.reporting.bean.CqCallEventLog" />
+                <mapping class="com.angel.vcc.reporting.bean.CqOperatorLog" />
+                <mapping class="com.angel.vcc.reporting.bean.CqOperatorEventLog" />
+                <mapping class="com.angel.vcc.reporting.bean.CallLog" />
+        </session-factory>
+</hibernate-configuration>
