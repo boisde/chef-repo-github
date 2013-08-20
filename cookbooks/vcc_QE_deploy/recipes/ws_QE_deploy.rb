@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: vcc_QE_deploy
+# Cookbook Name:: angel_vcc2.0
 # Recipe:: ws_QE_deploy
 #
 # Copyright 2013, Genesys, Angel.com
