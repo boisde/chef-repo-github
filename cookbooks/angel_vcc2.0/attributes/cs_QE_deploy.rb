@@ -1,0 +1,8 @@
+default["cs_standby_central_server_ip"] = "10.197.50.121"
+default["sb_hessian_ip"] = "10.197.50.119"
+default["reporting_hessian_ip"] = "10.197.50.87"
+default["angel_call_ip"] = "10.197.50.116"
+default["holly_ip"] = "10.197.55.76"
+default["sound_file_host_ip"] = "10.63.20.144"
+default["mail_smtp_ip"] = "10.197.55.67"
+default["reporting_enabled"] = "false"

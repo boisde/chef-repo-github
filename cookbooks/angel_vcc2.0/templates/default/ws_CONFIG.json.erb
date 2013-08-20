@@ -1,0 +1,64 @@
+{
+  "wsPort" : 8443,
+  "wsPortForCSAPI" : 8088,
+  "wsPubURL" : "http://<%= @ws_ip %>:8443",
+  "csHost" : "<%= @central_server_ip %>",
+  "csPort": 8080,
+  "Log" : {
+    "wsLogPath" : "/var/log/angel/vcc-ws",
+    "maxSizeInMBitOfLogfile" : 200
+  },
+  "HA" : {
+	 "enable" : true,
+	 "httpTimeOut" : 2000,
+     "sCsHost" : "<%= @standby_central_server_ip %>",
+  	"sCsPort" : 8080
+  },
+  "csApiIpLimiter" :{
+  	  "enable" : false,
+  	  "activeCsHostIp" : "10.63.20.33",
+  	  "standbyCsHostIp" : "10.63.21.192"
+  },
+  "enableClientDebugMode" : true,
+  "minimizeJsCss" : false,
+  
+  "sbloginUrl" : "http://<%= @ws_ip %>:8080/CQM",
+  "reportingUrl" : "http://<%= @ws_ip %>:8080/jsp/siteAnalyzer/agentReporting.jsp",
+  "addTimestamp2ClientProtocol" : false,
+  "SSL" : {
+    "enableSSL" : false,
+  	"sslKey" : "E:/nodejs/vcc/app/ssl/server.key",
+  	"sslCert" : "E:/nodejs/vcc/app/ssl/server.crt",
+  	"sslCA" : "E:/nodejs/vcc/app/ssl/ca.crt",
+  	"passphrase" : "1234QWER"
+  },
+  "security" : {
+  	 "enableTokenValidation" : false,
+  	 "tokenAvailableTime" : 1500,
+  	 "dbSession" : {
+    	 	"enable" : false,
+    	 	"cookieExpireTime" : 36000000,
+    	 	"dbHost" : "127.0.0.1",
+    	 	"dbPort" : 3306,
+    	 	"dbUser" : "root",
+    	 	"dbPassword" : "123789",
+    	 	"dbName" : "angelvcc",
+    	 	"dbTable" : "agent_login_session"
+  	 }
+  },
+  "oPMonitor" : {
+  	"enable" : true,
+  	"password" : "1234QWER"
+  },
+  "operatePanel" : {
+  	"enable" : true,
+  	"password" : "1234QWER"
+  },
+ "failoverURL" : {
+    "enable" : true,
+    "default" : "ashburn",
+    "ashburn" : "https://sb.angel.com/vcc-message/ash-message.txt",
+    "chicago" : "https://sb2.angel.com/vcc-message/chi-message.txt",
+    "poolingTime" : 2000
+  }
+}

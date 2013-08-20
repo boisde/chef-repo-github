@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- CacheManager Configuration ========================== An ehcache.xml 
+    corresponds to a single CacheManager. See instructions below or the ehcache 
+    schema (ehcache.xsd) on how to configure. System property tokens can be specified 
+    in this file which are replaced when the configuration is loaded. For example 
+    multicastGroupPort=${multicastGroupPort} can be replaced with the System 
+    property either from an environment variable or a system property specified 
+    with a command line switch such as -DmulticastGroupPort=4446. Another example, 
+    useful for Terracotta server based deployments is <terracottaConfig url="${serverAndPort}"/ 
+    and specify a command line switch of -Dserver36:9510 The attributes of <ehcache> 
+    are: * name - an optional name for the CacheManager. The name is optional 
+    and primarily used for documentation or to distinguish Terracotta clustered 
+    cache state. With Terracotta clustered caches, a combination of CacheManager 
+    name and cache name uniquely identify a particular cache store in the Terracotta 
+    clustered memory. * updateCheck - an optional boolean flag specifying whether 
+    this CacheManager should check for new versions of Ehcache over the Internet. 
+    If not specified, updateCheck="true". * dynamicConfig - an optional setting 
+    that can be used to disable dynamic configuration of caches associated with 
+    this CacheManager. By default this is set to true - i.e. dynamic configuration 
+    is enabled. Dynamically configurable caches can have their TTI, TTL and maximum 
+    disk and in-memory capacity changed at runtime through the cache's configuration 
+    object. * monitoring - an optional setting that determines whether the CacheManager 
+    should automatically register the SampledCacheMBean with the system MBean 
+    server. Currently, this monitoring is only useful when using Terracotta clustering 
+    and using the Terracotta Developer Console. With the "autodetect" value, 
+    the presence of Terracotta clustering will be detected and monitoring, via 
+    the Developer Console, will be enabled. Other allowed values are "on" and 
+    "off". The default is "autodetect". This setting does not perform any function 
+    when used with JMX monitors. -->
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="ehcache.xsd" updateCheck="false"
+    monitoring="autodetect" dynamicConfig="true">
+
+    <!-- Search ++++++ A <cache> can be made searchable by adding a <searchable/> 
+        sub-element. By default the keys and value objects of elements put into the 
+        cache will be attributes against which queries can be expressed. <cache> 
+        <searchable/> </cache> An "attribute" of the cache elements can also be defined 
+        to be searchable. In the example below an attribute with the name "age" will 
+        be available for use in queries. The value for the "age" attribute will be 
+        computed by calling the method "getAge()" on the value object of each element 
+        in the cache. See net.sf.ehcache.search.attribute.ReflectionAttributeExtractor 
+        for the format of attribute expressions. Attribute values must also conform 
+        to the set of types documented in the net.sf.ehcache.search.attribute.AttributeExtractor 
+        interface <cache> <searchable> <searchAttribute name="age" expression="value.getAge()"/> 
+        </searchable> </cache> Attributes may also be defined using a JavaBean style. 
+        With the following attribute declaration a public method getAge() will be 
+        expected to be found on either the key or value for cache elements <cache> 
+        <searchable> <searchAttribute name="age"/> </searchable> </cache> In more 
+        complex situations you can create your own attribute extractor by implementing 
+        the AttributeExtractor interface. Providing your extractor class is shown 
+        in the following example: <cache> <searchable> <searchAttribute name="age" 
+        class="com.example.MyAttributeExtractor"/> </searchable> </cache> Use properties 
+        to pass state to your attribute extractor if needed. Your implementation 
+        must provide a public constructor that takes a single java.util.Properties 
+        instance <cache> <searchable> <searchAttribute name="age" class="com.example.MyAttributeExtractor" 
+        properties="foo=1,bar=2"/> </searchable> </cache> -->
+    
+    <!-- <cacheManagerPeerProviderFactory
+        class="net.sf.ehcache.distribution.RMICacheManagerPeerProviderFactory"
+        properties="peerDiscovery=automatic, multicastGroupAddress=230.0.0.1,
+        multicastGroupPort=40001, timeToLive=32" /> -->
+        
+    <cacheManagerPeerProviderFactory class="com.angel.vcc.cache.VccRMICacheManagerPeerProviderFactory"
+                                     properties="peerDiscovery=manual,
+                                     cacheHosts=<%= @standby_central_server_ip %>:40001,
+                                     cacheNames=defaultCache|callerStore|phoneLineStore|contactStore|callVarStore|callerQueue|agentWebServerMapping|publisherStore|agentStore|supervisorStore|agentPool|callQueueStore|callStore"/>
+    
+    <cacheManagerPeerListenerFactory
+        class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"
+        properties="hostName=<%= @central_server_ip %>, port=40001,socketTimeoutMillis=2000"/>
+        
+    <!-- Default Cache configuration. These settings will be applied to caches 
+        created programmatically using CacheManager.add(String cacheName). This element 
+        is optional, and using CacheManager.add(String cacheName) when its not present 
+        will throw CacheException The defaultCache has an implicit name "default" 
+        which is a reserved cache name. -->
+    <cache name="defaultCache" maxElementsInMemory="10000" eternal="false" timeToIdleSeconds="86400" memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>        
+    </cache>
+
+    <cache name="callerStore" maxElementsInMemory="3000" eternal="false"
+        timeToLiveSeconds="28800" memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <searchable>
+            <searchAttribute name="callerId"/>
+            <searchAttribute name="state" expression="value.getStateEnum()"/>
+            <searchAttribute name="calluuid"/>
+            <searchAttribute name="queueId"/>
+            <searchAttribute name="gmtEnterVcc"/>
+            <searchAttribute name="gmtStartTalking"/>
+            <searchAttribute name="callOutcome"/>
+        </searchable>
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+    
+    <cache name="phoneLineStore" timeToLiveSeconds="300" maxElementsInMemory="1000" eternal="false" memoryStoreEvictionPolicy="FIFO" transactionalMode="off" >
+        <searchable>
+            <searchAttribute name="phoneNumber"/>
+        </searchable>
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+    
+    <cache name="contactStore" maxElementsInMemory="2000" eternal="false" memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <searchable>
+            <searchAttribute name="phoneNumber"/>
+            <searchAttribute name="queueId"/>
+            <searchAttribute name="calluuid"/>
+            <searchAttribute name="contactCalluuid"/>
+            <searchAttribute name="isTempContact"/>         
+        </searchable>
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache> 
+    
+    <cache name="callStore" maxElementsInMemory="10000" eternal="false"
+        timeToLiveSeconds="28800" memoryStoreEvictionPolicy="FIFO"
+        transactionalMode="off">
+        <searchable>
+            <searchAttribute name="kaniId"/>
+            <searchAttribute name="gmtEnd"/>
+        </searchable>
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+
+    <cache name="callVarStore" maxElementsInMemory="10000" eternal="false"
+        timeToLiveSeconds="28800" memoryStoreEvictionPolicy="FIFO"
+        transactionalMode="off" >
+        <searchable>
+            <searchAttribute name="calluuid"/>
+            <searchAttribute name="name"/>          
+        </searchable>
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+    
+    <cache name="callerQueue" maxElementsInMemory="3000" eternal="false"
+        timeToLiveSeconds="28800" memoryStoreEvictionPolicy="FIFO"
+        transactionalMode="off">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+                
+    <cache name="agentWebServerMapping" maxElementsInMemory="5000" eternal="true" memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+        
+    <cache name="publisherStore" maxElementsInMemory="10000" eternal="true" memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+        
+    <cache name="agentStore" maxElementsInMemory="5000" eternal="true" 
+        memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <searchable>
+            <searchAttribute name="agentId"/>
+            <searchAttribute name="state" expression="value.getStateEnum()"/>
+            <searchAttribute name="phoneNumber"/>
+            <searchAttribute name="queueId"/>
+            <searchAttribute name="calluuid"/>
+            <searchAttribute name="agentCalluuid"/>
+        </searchable>
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+                    
+    <cache name="supervisorStore" maxElementsInMemory="3000" eternal="true" 
+        memoryStoreEvictionPolicy="FIFO" transactionalMode="off">   
+        <searchable>
+            <searchAttribute name="supervisorId"/>
+            <searchAttribute name="calluuid"/>
+            <searchAttribute name="queueId"/>
+            <searchAttribute name="supervisorCalluuid"/>
+        </searchable>   
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+        
+    <cache name="agentPool" maxElementsInMemory="5000" eternal="true"
+        memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+        
+    <cache name="callQueueStore" maxElementsInMemory="500" eternal="true"
+        memoryStoreEvictionPolicy="FIFO" transactionalMode="off">
+        <searchable>
+            <searchAttribute name="domainCode"/>
+        </searchable> 
+        <cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
+        <bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"
+            properties="bootstrapAsynchronously=false"/>
+    </cache>
+    
+    <cache name="obConfiguration" maxElementsInMemory="100" eternal="true"
+        memoryStoreEvictionPolicy="LRU" transactionalMode="off"/>
+</ehcache>
+
